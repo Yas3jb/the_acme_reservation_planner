@@ -1,4 +1,9 @@
-const { client, createTables } = require("./db");
+const {
+  client,
+  createTables,
+  createCustomer,
+  createResturant,
+} = require("./db");
 
 const init = async () => {
   await client.connect();
