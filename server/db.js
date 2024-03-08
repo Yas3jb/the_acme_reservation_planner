@@ -3,6 +3,7 @@ const client = new pg.Client(
   process.env.DATABASE_URL ||
     "postgres://localhost/the_acme_reservation_planner"
 );
+const uuid = require("uuid");
 // Create Tables
 const createTables = async () => {
   const SQL = `
@@ -29,7 +30,27 @@ const createTables = async () => {
   await client.query(SQL);
 };
 
+// Create Customer
+const createCustomer = async (name) => {
+  const SQL = `
+      INSERT INTO customer(id, name) VALUES($1, $2) RETURNING *
+    `;
+  const response = await client.query(SQL, [uuid.v4(), name]);
+  return response.rows[0];
+};
+
+// Create Resturant
+const createResturant = async (name) => {
+  const SQL = `
+      INSERT INTO resturant(id, name) VALUES($1, $2) RETURNING *
+    `;
+  const response = await client.query(SQL, [uuid.v4(), name]);
+  return response.rows[0];
+};
+
 module.exports = {
   client,
   createTables,
+  createCustomer,
+  createResturant,
 };
