@@ -48,6 +48,26 @@ const createResturant = async (name) => {
   return response.rows[0];
 };
 
+// Create Reservation
+const createReservation = async ({
+  resturant_id,
+  customer_id,
+  party_count,
+  reservation_date,
+}) => {
+  const SQL = `
+      INSERT INTO reservations(id, resturant_id, customer_id, party_count reservation_date) VALUES($1, $2, $3, $4, $5) RETURNING *
+    `;
+  const response = await client.query(SQL, [
+    uuid.v4(),
+    resturant_id,
+    customer_id,
+    party_count,
+    reservation_date,
+  ]);
+  return response.rows[0];
+};
+
 // Fetches Customers
 const fetchCustomers = async () => {
   const SQL = `
@@ -75,4 +95,5 @@ module.exports = {
   createResturant,
   fetchCustomers,
   fetchResturants,
+  createReservation,
 };
