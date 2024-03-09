@@ -7,6 +7,7 @@ const {
   fetchResturants,
   createReservation,
   fetchReservations,
+  destroyReservation,
 } = require("./db");
 
 const init = async () => {
@@ -61,6 +62,9 @@ const init = async () => {
     }),
   ]);
   console.log(await fetchReservations());
+  console.log(vacations);
+  await destroyVacation(vacations[0].id);
+  console.log(await fetchVacations());
 };
 
 init();
