@@ -98,6 +98,15 @@ const fetchReservations = async () => {
   return response.rows;
 };
 
+// Delete Reservations
+const destroyReservation = async (id) => {
+  const SQL = `
+  DELETE FROM reservations
+  where id = $1
+    `;
+  await client.query(SQL, [id]);
+};
+
 module.exports = {
   client,
   createTables,
@@ -107,4 +116,5 @@ module.exports = {
   fetchResturants,
   createReservation,
   fetchReservations,
+  destroyReservation,
 };
