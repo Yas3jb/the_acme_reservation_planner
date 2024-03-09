@@ -21,6 +21,8 @@ app.get("/api/customers", async (req, res, next) => {
   try {
     res.send(await fetchCustomers());
   } catch (ex) {
+    // error handling
+    res.status(500).json({ error: "Failed to load customers" });
     next(ex);
   }
 });
@@ -30,6 +32,8 @@ app.get("/api/resturants", async (req, res, next) => {
   try {
     res.send(await fetchResturants());
   } catch (ex) {
+    // error handling
+    res.status(500).json({ error: "Failed to load resturants" });
     next(ex);
   }
 });
@@ -39,6 +43,8 @@ app.get("/api/reservations", async (req, res, next) => {
   try {
     res.send(await fetchReservations());
   } catch (ex) {
+    // error handling
+    res.status(500).json({ error: "Failed to load reservations" });
     next(ex);
   }
 });
@@ -48,6 +54,8 @@ app.post("/api/customers/:id/reservations", async (req, res, next) => {
   try {
     res.status(201).send(await createReservation(req.body));
   } catch (ex) {
+    // error handling
+    res.status(500).json({ error: "Failed to add reservations" });
     next(ex);
   }
 });
@@ -56,13 +64,13 @@ app.delete(
   "/api/customers/:customer_id/reservations/:id",
   async (req, res, next) => {
     try {
-      // Ensure req.params.id is correctly extracted
-      console.log("Reservation ID:", req.params.id);
       await destroyReservation(req.params.id);
       res.sendStatus(204);
     } catch (ex) {
-      // Log any errors that occur during reservation deletion
-      console.error("Error deleting reservation:", ex);
+      // error handling
+      res
+        .status(500)
+        .json({ error: "Failed to delete customer's reservation" });
       next(ex);
     }
   }
