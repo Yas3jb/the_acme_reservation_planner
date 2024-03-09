@@ -8,14 +8,14 @@ const uuid = require("uuid");
 const createTables = async () => {
   const SQL = `
   DROP TABLE IF EXISTS reservations;
-  DROP TABLE IF EXISTS customer;
-  DROP TABLE IF EXISTS resturant;
+  DROP TABLE IF EXISTS customers;
+  DROP TABLE IF EXISTS resturants;
   
-  CREATE TABLE customer(
+  CREATE TABLE customers(
     id UUID PRIMARY KEY,
     name VARCHAR(25)
   );
-  CREATE TABLE resturant(
+  CREATE TABLE resturants(
     id UUID PRIMARY KEY,
     name VARCHAR(50)
   );
@@ -23,8 +23,8 @@ const createTables = async () => {
     id UUID PRIMARY KEY,
     reservation_date DATE NOT NULL,
     party_count INTEGER NOT NULL,
-    resturant_id UUID REFERENCES resturant(id) NOT NULL,
-    customer_id UUID REFERENCES customer(id) NOT NULL,
+    resturant_id UUID REFERENCES resturants(id) NOT NULL,
+    customer_id UUID REFERENCES customers(id) NOT NULL
   );
     `;
   await client.query(SQL);
@@ -33,7 +33,7 @@ const createTables = async () => {
 // Create Customer
 const createCustomer = async (name) => {
   const SQL = `
-      INSERT INTO customer(id, name) VALUES($1, $2) RETURNING *
+      INSERT INTO customers(id, name) VALUES($1, $2) RETURNING *
     `;
   const response = await client.query(SQL, [uuid.v4(), name]);
   return response.rows[0];
@@ -42,7 +42,7 @@ const createCustomer = async (name) => {
 // Create Resturant
 const createResturant = async (name) => {
   const SQL = `
-      INSERT INTO resturant(id, name) VALUES($1, $2) RETURNING *
+      INSERT INTO resturants(id, name) VALUES($1, $2) RETURNING *
     `;
   const response = await client.query(SQL, [uuid.v4(), name]);
   return response.rows[0];
@@ -56,7 +56,7 @@ const createReservation = async ({
   reservation_date,
 }) => {
   const SQL = `
-      INSERT INTO reservations(id, resturant_id, customer_id, party_count reservation_date) VALUES($1, $2, $3, $4, $5) RETURNING *
+      INSERT INTO reservations(id, resturant_id, customer_id, party_count, reservation_date) VALUES($1, $2, $3, $4, $5) RETURNING *
     `;
   const response = await client.query(SQL, [
     uuid.v4(),
@@ -72,7 +72,7 @@ const createReservation = async ({
 const fetchCustomers = async () => {
   const SQL = `
   SELECT *
-  FROM customer
+  FROM customers
     `;
   const response = await client.query(SQL);
   return response.rows;
@@ -82,7 +82,7 @@ const fetchCustomers = async () => {
 const fetchResturants = async () => {
   const SQL = `
   SELECT *
-  FROM resturant
+  FROM resturants
     `;
   const response = await client.query(SQL);
   return response.rows;

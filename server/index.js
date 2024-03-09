@@ -1,3 +1,4 @@
+const e = require("express");
 const {
   client,
   createTables,
@@ -13,6 +14,59 @@ const {
 // Express Application
 const express = require("express");
 const app = express();
+app.use(express.json());
+
+// GET Customers
+app.get("/api/customers", async (req, res, next) => {
+  try {
+    res.send(await fetchCustomers());
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// GET Resturants
+app.get("/api/resturants", async (req, res, next) => {
+  try {
+    res.send(await fetchResturants());
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// GET Reservations
+app.get("/api/reservations", async (req, res, next) => {
+  try {
+    res.send(await fetchReservations());
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+// POST Customer's Reservations
+app.post("/api/customers/:id/reservations", async (req, res, next) => {
+  try {
+    res.status(201).send(await createReservation(req.body));
+  } catch (ex) {
+    next(ex);
+  }
+});
+// DELETE Customers Reservations
+app.delete(
+  "/api/customers/:customer_id/reservations/:id",
+  async (req, res, next) => {
+    try {
+      // Ensure req.params.id is correctly extracted
+      console.log("Reservation ID:", req.params.id);
+      await destroyReservation(req.params.id);
+      res.sendStatus(204);
+    } catch (ex) {
+      // Log any errors that occur during reservation deletion
+      console.error("Error deleting reservation:", ex);
+      next(ex);
+    }
+  }
+);
 
 const init = async () => {
   await client.connect();
@@ -32,13 +86,10 @@ const init = async () => {
       createResturant("LA_Cafe"),
       createResturant("Paris_Cafe"),
     ]);
-  console.log(`Edwin has an id of ${Edwin.id}`);
-  console.log(`Kavin has an id of ${Liz.id}`);
-  console.log(`Kavin has an id of ${Kavin.id}`);
   console.log(await fetchCustomers());
   console.log(await fetchResturants());
 
-  // Promise.all to create 4 Reservations
+  // Promise.all to create 3 Reservations
   await Promise.all([
     createReservation({
       customer_id: Edwin.id,
@@ -58,17 +109,10 @@ const init = async () => {
       party_count: 7,
       reservation_date: "01/13/2024",
     }),
-    createReservation({
-      customer_id: Yasin.id,
-      resturant_id: LA_Cafe.id,
-      party_count: 5,
-      reservation_date: "08/08/2024",
-    }),
   ]);
+  const reservations = await fetchReservations();
+  await destroyReservation(reservations[0].id);
   console.log(await fetchReservations());
-  console.log(vacations);
-  await destroyReservation(vacations[0].id);
-  console.log(await fetchVacations());
 
   // Listening to port
   const port = process.env.PORT || 3000;
