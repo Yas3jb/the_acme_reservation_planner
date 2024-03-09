@@ -10,6 +10,10 @@ const {
   destroyReservation,
 } = require("./db");
 
+// Express Application
+const express = require("express");
+const app = express();
+
 const init = async () => {
   await client.connect();
   console.log("connected to database");
@@ -63,8 +67,12 @@ const init = async () => {
   ]);
   console.log(await fetchReservations());
   console.log(vacations);
-  await destroyVacation(vacations[0].id);
+  await destroyReservation(vacations[0].id);
   console.log(await fetchVacations());
+
+  // Listening to port
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log(`listening on port ${port}`));
 };
 
 init();
