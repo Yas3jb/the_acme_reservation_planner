@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npm install && npm run build",
+    "start":"node index.js",
     "start:dev": "nodemon server/index.js"
   },
   "keywords": [],
